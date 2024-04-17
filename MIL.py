@@ -18,10 +18,7 @@ import warnings
 class Classif_MIL(nn.Module):
     def __init__(self,num_features = 279, num_classes=1, dropout_rate=0.5):
         super(Classif_MIL, self).__init__()
-        #self.resnet = models.resnet18(pretrained=pretrained)
-
-        #self.features = nn.Sequential(*list(self.resnet.children())[:-1])
-        #num_ftrs = self.resnet.fc.in_features
+       
 
         self.fc_layers = nn.Sequential(
             nn.Linear(num_features , 512),
@@ -40,9 +37,6 @@ class Classif_MIL(nn.Module):
 
 
     def forward(self, slices):
-        #img_features = self.features(images)
-        #img_features = img_features.view(img_features.size(0), -1)
-        #combined_features = torch.cat((img_features, lymph_counts.unsqueeze(1), ages.unsqueeze(1), genders.unsqueeze(1)), dim=1)
         out = self.fc_layers(slices)
         return out
 
@@ -56,6 +50,8 @@ class Classif_MIL(nn.Module):
 class MIL_Slice_Dataset(Dataset):
     
     def __init__(self, dataframe_slices, labels_df ):
+        # Preprocessing the data and initializing necessary variables
+        # Here, StandardScaler is used to standardize the data
         patient_nums = dataframe_slices['patient_num']
         dataframe_slices_without_patient_num = dataframe_slices.drop(columns=['patient_num'])
 
@@ -67,7 +63,7 @@ class MIL_Slice_Dataset(Dataset):
         self.normalized_slices['patient_num'] = patient_nums
         self.normalized_slices = self.normalized_slices[dataframe_slices.columns]
 
-        self.corresp = {'CCK': 0, 'CHC':1}
+        self.corresp = {'CCK': 0, 'CHC':1}  # Corresponding class labels
         self.labels_df = labels_df
 
         
@@ -76,6 +72,7 @@ class MIL_Slice_Dataset(Dataset):
         return len(self.labels_df['patient_num'].unique())
 
     def __getitem__(self, idx):
+        # Getting data for a specific patient
         patient_id = self.normalized_slices['patient_num'].unique()[idx]
         label_patient =  self.get_label_tensor(patient_id)  
         patient_data_slices =  self.normalized_slices[self.normalized_slices['patient_num'] == patient_id]
@@ -90,6 +87,7 @@ class MIL_Slice_Dataset(Dataset):
         return torch.tensor(patient_id), torch.stack(slices), label_patient, torch.tensor(len(slices))
 
     def get_label_tensor(self, patient_id):
+        # Getting label tensor for a patient
         filtered_labels = self.labels_df[self.labels_df['patient_num'] == patient_id]['classe_name']
         if not filtered_labels.empty:
             first_classe_name = filtered_labels.iloc[0]
@@ -118,9 +116,10 @@ def patient_collate_fn(batch):
 
 class LymphoDataLoader:
     """
-    Data Loader calling our previous MILImageDataset to be processed by the DL model.
+    Data Loader calling our previous MIL_Slice_Dataset to be processed by the DL model.
     """
     def __init__(self, dataframe_slices, label_df, batch_size, shuffle=True, num_workers=0):
+        # Initializing the DataLoader with our MIL_Slice_Dataset
         self.dataset = MIL_Slice_Dataset(dataframe_slices, label_df)
         self.batch_size = batch_size
         self.shuffle = shuffle
@@ -148,7 +147,7 @@ def custom_train_epoch(model, train_loader, optimizer, criterion, device, topk):
     loss_total = 0
     num_batches = 0
 
-    for batch in train_loader: # 1 batch = at least 1 patient with all of its instances = images
+    for batch in train_loader: # 1 batch = at least 1 patient with all of its instances = slices
         
         patient_ids, slices, labels, n_slices = batch
         slices = slices.to(device)
@@ -158,7 +157,7 @@ def custom_train_epoch(model, train_loader, optimizer, criterion, device, topk):
         outputs = model(slices)
         aggregated_outputs = torch.tensor([], device=device)
         
-        deb = 0 # dummy variable to know where the patients' images start and end
+        deb = 0 # dummy variable to know where the patients' slices start and end
         
         for fin in n_slices :
             
