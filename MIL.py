@@ -411,8 +411,7 @@ if __name__=='__main__':
                 model.load_state_dict(best_model)
                 test_loader = data_module_test.get_dataloader()
                 metrics = custom_validate_epoch(model, test_loader, device, topk = topK)
-
-
+                
                 res_BA = metrics['balanced_accuracy']
                 res_precision = metrics['precision']
                 res_recall = metrics['recall']
