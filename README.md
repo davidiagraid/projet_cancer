@@ -1,5 +1,6 @@
 # Projet classification de tumeurs du foie
 
+Les données ne sont pas en ligne, pour faire marcher le code, il suffit de les ajouter dans un dossier 'data' à la racine du projet
 - MIL.py : Permet de lancer la méthode Multiple Instance learning en CLI. 
     Exemple : python  MIL.py --Val False --Test True --n_runs_test 5  
     Paramètres : 
