@@ -10,3 +10,7 @@
 
 - sliced_data.ipynb : notebook qui permet de générer les données pour l'inférence sur les données par slices. Laissez vous guider
 - tree_classification.ipynb :  notebook qui permet de tester les classifieurs sous forme d'arbre décisionnels.
+
+- extract_and_save.ipynb : Notebook qui permet de convertir les fichiers excel en tenseurs utilisables pour la régression logistique et PARAFAC (données de départ de Laurent Le Brusquet donnée lors du cours de AMDA)
+
+- tensor_analysis.ipynb : Notebook qui contient toute l'analyse tensorielle des données avec notamment PARAFAC et la régression logistique tensorielle
