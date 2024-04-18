@@ -1,6 +1,7 @@
-# projet_cancer
+# Projet classification de tumeurs du foie
 
-- MIL.py : Permet de lancer la méthode Multiple Instance learning en CLI. Exemple : python  MIL.py --Val False --Test True --n_runs_test 5  
+- MIL.py : Permet de lancer la méthode Multiple Instance learning en CLI. 
+    Exemple : python  MIL.py --Val False --Test True --n_runs_test 5  
     Paramètres : 
     - Val (True ou False). Si c'est True, le choix du meilleur K est lancé
     - Test (True ou False). Si c'est True, le Test est lancé avec K fixé à 100 car c'est la meilleure valeur

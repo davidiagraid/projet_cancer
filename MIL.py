@@ -114,7 +114,7 @@ def patient_collate_fn(batch):
     return patient_ids, torch.stack(slices_flattened), labels,n_slices
 
 
-class LymphoDataLoader:
+class RadiomikDataLoader:
     """
     Data Loader calling our previous MIL_Slice_Dataset to be processed by the DL model.
     """
@@ -318,13 +318,13 @@ if __name__=='__main__':
                 for epoch in range(n_epochs):
                     
                     warnings.filterwarnings("ignore", message="To copy construct from a tensor.*")
-                    data_module = LymphoDataLoader(train_dataset, label_train, batch_size=4, shuffle=True) 
+                    data_module = RadiomikDataLoader(train_dataset, label_train, batch_size=4, shuffle=True) 
                     train_loader = data_module.get_dataloader()
                     train_loss = custom_train_epoch(model, train_loader, optimizer, criterion, device, topk = topK)
                     scheduler.step()
                     
                     
-                    data_module_val = LymphoDataLoader(val_dataset, label_val, batch_size=4, shuffle=True)
+                    data_module_val = RadiomikDataLoader(val_dataset, label_val, batch_size=4, shuffle=True)
                     val_loader = data_module_val.get_dataloader()
                     metrics = custom_validate_epoch(model, val_loader, device, topk = topK)
                     if metrics['balanced_accuracy']>max_BA:
@@ -393,12 +393,12 @@ if __name__=='__main__':
                     
                     #print(f'Epoch {epoch}/{n_epochs}')
                     warnings.filterwarnings("ignore", message="To copy construct from a tensor.*")
-                    data_module = LymphoDataLoader(train_dataset, label_train, batch_size=4, shuffle=True) 
+                    data_module = RadiomikDataLoader(train_dataset, label_train, batch_size=4, shuffle=True) 
                     train_loader = data_module.get_dataloader()
                     train_loss = custom_train_epoch(model, train_loader, optimizer, criterion, device, topk = topK)
                     scheduler.step()
 
-                    data_module_val = LymphoDataLoader(val_dataset, label_val, batch_size=4, shuffle=True)
+                    data_module_val = RadiomikDataLoader(val_dataset, label_val, batch_size=4, shuffle=True)
                     val_loader = data_module_val.get_dataloader()
                     metrics = custom_validate_epoch(model, val_loader, device, topk = topK)
                     if metrics['balanced_accuracy']>max_BA:
@@ -406,7 +406,7 @@ if __name__=='__main__':
                         best_model = model.state_dict().copy()
                 
 
-                data_module_test = LymphoDataLoader(test_dataset, label_test, batch_size=4, shuffle=True)
+                data_module_test = RadiomikDataLoader(test_dataset, label_test, batch_size=4, shuffle=True)
                 model.load_state_dict(best_model)
                 test_loader = data_module_test.get_dataloader()
                 metrics = custom_validate_epoch(model, test_loader, device, topk = topK)
